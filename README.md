@@ -168,7 +168,7 @@ python app.py
 - Unique Categories: 5 (Tops, Shoes, Bags, Home, Accessories)
 - Unique Products: 50 (Product 1 → Product 50)
 - Unique Prices: 50 (range: 9.99 → 64.79, all distinct)
-✅ Balanced catalog with diverse items & unique prices.
+- ✅ Balanced catalog with diverse items & unique prices.
 
 ## ☁ Deployment
 - ✅ Run locally via Flask
@@ -178,6 +178,7 @@ python app.py
 ## 📸 Screenshots
 <img width="1056" height="484" alt="image" src="https://github.com/user-attachments/assets/52187dcd-1a12-482d-81bd-8ce25d11bb9f" />
 <img width="1079" height="950" alt="image" src="https://github.com/user-attachments/assets/07b4aa93-2a15-4fcf-83c4-98b3174ca331" />
+
 
 
 
