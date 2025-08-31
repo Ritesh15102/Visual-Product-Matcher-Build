@@ -17,7 +17,7 @@ app = Flask(__name__)
 # ----------------- Helpers -----------------
 def preprocess_image(file):
     img = Image.open(file)
-    img.thumbnail((1024,1024))   # limit image size for hosting
+    img.thumbnail((1024,1024))   # limit image size
     img = img.convert("RGB").resize((224,224))
     arr = np.array(img, dtype=np.float32) / 255.0
     return arr[np.newaxis, ...]
@@ -76,12 +76,23 @@ def api_search():
             from io import BytesIO
             import requests
             try:
-                r = requests.get(url, timeout=10)
+                r = requests.get(
+                    url, 
+                    timeout=10, 
+                    headers={"User-Agent": "Mozilla/5.0"}
+                )
                 r.raise_for_status()
-            except Exception as e:
-                return jsonify({"error": f"Failed to fetch image from URL: {e}"}), 400
-            img = preprocess_image(BytesIO(r.content))
 
+                # Ensure the response is an image
+                if "image" not in r.headers.get("Content-Type", ""):
+                    return jsonify({"error": "Provided URL did not return an image"}), 400
+
+                img = preprocess_image(BytesIO(r.content))
+
+            except Exception as e:
+                return jsonify({"error": f"Failed to fetch/process image from URL: {e}"}), 400
+
+        # ---- compute embedding ----
         q_emb = model(img).numpy().reshape(-1)
         q_emb /= (np.linalg.norm(q_emb)+1e-8)
 
@@ -101,10 +112,9 @@ def api_search():
         return jsonify({"results": results[:10]})
 
     except Exception as e:
-        traceback.print_exc()  # log full error on Render
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
