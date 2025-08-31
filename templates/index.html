@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,19 +10,16 @@
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-
     .container {
       max-width: 800px;
       margin: auto;
     }
-
     .card {
       background: #f9f9f9;
       padding: 20px;
       border-radius: 12px;
       margin: 15px 0;
     }
-
     .btn {
       padding: 10px 20px;
       border: none;
@@ -32,40 +28,33 @@
       cursor: pointer;
       border-radius: 6px;
     }
-
     .btn:hover {
       background: #0056b3;
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 15px;
     }
-
     .product img {
       width: 100%;
       border-radius: 8px;
     }
-
     .meta {
       margin-top: 5px;
       font-size: 14px;
     }
-
     .muted {
       color: #555;
       font-size: 12px;
       margin-bottom: 5px;
     }
-
     .error {
       color: red;
       margin-top: 10px;
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <header>
@@ -91,13 +80,18 @@
   </div>
 
   <script>
-    async function search() {
+async function search() {
   const file = document.getElementById("fileInput").files[0];
   const url = document.getElementById("urlInput").value.trim();
   const img = document.getElementById("queryImg");
+  const errorBox = document.getElementById("error");
+
+  // reset UI
+  errorBox.innerText = "";
+  document.getElementById("resultsCard").style.display = "none";
 
   if (!file && !url) {
-    document.getElementById("error").innerText = "⚠️ Select a file or paste an image URL!";
+    errorBox.innerText = "⚠️ Select a file or paste an image URL!";
     return;
   }
 
@@ -105,16 +99,19 @@
   if (file) {
     formData.append("file", file);
     img.src = URL.createObjectURL(file);
+    document.getElementById("queryCard").style.display = "block";
   } else {
     formData.append("url", url);
-    img.crossOrigin = "anonymous";
-    img.src = url;
+
+    // Show query image only if it's a valid direct link
+    if (url.match(/\.(jpeg|jpg|png|gif|webp)$/i)) {
+      img.src = url;
+      document.getElementById("queryCard").style.display = "block";
+    } else {
+      img.removeAttribute("src"); // avoid broken icon
+      document.getElementById("queryCard").style.display = "none";
+    }
   }
-
-  document.getElementById("error").innerText = "";
-  document.getElementById("queryCard").style.display = "block";
-
-  await new Promise(r => { img.onload = r; });
 
   try {
     const res = await fetch("/api/search", {
@@ -122,26 +119,23 @@
       body: formData
     });
 
+    const text = await res.text();
     let data;
     try {
-      const text = await res.text(); // get raw text
-      data = JSON.parse(text);       // try parsing JSON
+      data = JSON.parse(text);
     } catch (err) {
-      document.getElementById("error").innerText = "Backend returned invalid JSON.";
-      console.error("Invalid JSON:", err);
+      errorBox.innerText = "Backend returned invalid JSON.";
+      console.error("Invalid JSON:", text);
       return;
     }
 
-    // Handle backend errors
     if (data.error) {
-      document.getElementById("error").innerText = "Error: " + data.error;
-      document.getElementById("resultsCard").style.display = "none";
+      errorBox.innerText = "Error: " + data.error;
       return;
     }
 
     if (!data.results || data.results.length === 0) {
-      document.getElementById("error").innerText = "No results found!";
-      document.getElementById("resultsCard").style.display = "none";
+      errorBox.innerText = "No results found!";
       return;
     }
 
@@ -159,11 +153,10 @@
     document.getElementById("resultsCard").style.display = "block";
 
   } catch (err) {
-    document.getElementById("error").innerText = "Error connecting to backend.";
+    errorBox.innerText = "Error connecting to backend.";
     console.error(err);
   }
 }
-
   </script>
 </body>
 </html>
