@@ -116,13 +116,16 @@ pip install -r requirements.txt
 ```
 ### 📌 requirements.txt
 ``` txt
-flask
-torch
-torchvision
-pandas
+setuptools>=65.0.0
+wheel
+Flask
 numpy
-pillow
+pandas
+Pillow
 requests
+tensorflow==2.16.1
+tensorflow_hub==0.16.1
+gunicorn
 ```
 ## 3️⃣ Prepare catalog data
 - Create/edit backend/data/products.csv like:
@@ -175,5 +178,6 @@ python app.py
 ## 📸 Screenshots
 <img width="1056" height="484" alt="image" src="https://github.com/user-attachments/assets/52187dcd-1a12-482d-81bd-8ce25d11bb9f" />
 <img width="1079" height="950" alt="image" src="https://github.com/user-attachments/assets/07b4aa93-2a15-4fcf-83c4-98b3174ca331" />
+
 
 
