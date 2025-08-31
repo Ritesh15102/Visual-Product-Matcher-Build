@@ -11,6 +11,28 @@ https://photo-analyzer-al39.onrender.com/
 
 ---
 
+# 🧭 Approach  
+
+### Catalog Preparation & Indexing
+- Process all images and metadata from `products.csv`
+- Each image is passed through **MobileNetV2 (pretrained on ImageNet)** to generate a *1280-dimensional embedding**.
+- Embeddings are normalized and saved to `index.csv` for fast lookup during runtime.
+### Query Processing
+- When a user uploads an image or provides a URL, the same embedding process is applied.
+- The query image is converted into a `1280-D vector`.
+### Similarity Computation
+- **Cosine similarity** is calculated between the query embedding and catalog embeddings.
+- This measures how visually similar the images are in feature space.
+### Result Retrieval & Ranking
+- Catalog embeddings are sorted by similarity score.
+- Top-N most similar products are selected.
+- Output includes product name, category, price, image, and similarity score.
+### Optimizations
+- Images and embeddings are cached for faster queries.
+- CSV-based indexing is lightweight and efficient for small to medium catalogs.
+
+---
+
 ## ✨ Features  
 
 - 📂 **Catalog Indexing** from a `products.csv` (id, name, category, price, image URL)  
@@ -65,26 +87,6 @@ photo-analyzer/
 - Sorts by similarity score  
 - Displays **name, category, price, image, similarity score**  
 
----
-# 🧭 Approach  
-
-### Catalog Preparation & Indexing
-- Process all images and metadata from `products.csv`
-- Each image is passed through **MobileNetV2 (pretrained on ImageNet)** to generate a *1280-dimensional embedding**.
-- Embeddings are normalized and saved to `index.csv` for fast lookup during runtime.
-### Query Processing
-- When a user uploads an image or provides a URL, the same embedding process is applied.
-- The query image is converted into a `1280-D vector`.
-### Similarity Computation
-- **Cosine similarity** is calculated between the query embedding and catalog embeddings.
-- This measures how visually similar the images are in feature space.
-### Result Retrieval & Ranking
-- Catalog embeddings are sorted by similarity score.
-- Top-N most similar products are selected.
-- Output includes product name, category, price, image, and similarity score.
-### Optimizations
-- Images and embeddings are cached for faster queries.
-- CSV-based indexing is lightweight and efficient for small to medium catalogs.
 ---
 
 # 🛠 Tech Stack  
@@ -173,4 +175,5 @@ python app.py
 ## 📸 Screenshots
 <img width="1056" height="484" alt="image" src="https://github.com/user-attachments/assets/52187dcd-1a12-482d-81bd-8ce25d11bb9f" />
 <img width="1079" height="950" alt="image" src="https://github.com/user-attachments/assets/07b4aa93-2a15-4fcf-83c4-98b3174ca331" />
+
 
